@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Messenger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .messenger-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .status-dot.disconnected {
+            background: #ef4444;
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .message.own {
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message.own .message-bubble {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message:not(.own) .message-bubble {
+            background: white;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-info {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .message.own .message-info {
+            text-align: right;
+        }
+
+        .username {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .system-message {
+            text-align: center;
+            margin: 15px 0;
+            padding: 8px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            font-size: 14px;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #6b7280;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .input-container {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .username-input {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 120px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 1px solid #d1d5db;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .message-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #6b7280;
+            margin-top: 50px;
+        }
+
+        .welcome-message h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .welcome-message p {
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .messenger-container {
+                height: 100vh;
+                border-radius: 0;
+                max-width: none;
+            }
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .messages-container {
+                padding: 20px;
+            }
+
+            .input-container {
+                padding: 15px 20px;
+            }
+
+            .username-input {
+                width: 100px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="messenger-container">
+        <div class="header">
+            <h1>
+                <div class="logo">M</div>
+                Professional Messenger
+            </h1>
+            <div class="status">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+            <div class="welcome-message">
+                <h2>Welcome to Professional Messenger</h2>
+                <p>Start typing to send your first message</p>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="usernameInput" 
+                class="username-input" 
+                placeholder="Your name"
+                maxlength="20"
+            >
+            <input 
+                type="text" 
+                id="messageInput" 
+                class="message-input" 
+                placeholder="Type your message..."
+                maxlength="500"
+                disabled
+            >
+            <button id="sendButton" class="send-button" disabled>
+                ➤
+            </button>
+        </div>
+    </div>
+
+    <script>
+        class MessengerApp {
+            constructor() {
+                this.ws = null;
+                this.username = '';
+                this.isConnected = false;
+                this.typingTimeout = null;
+                this.typingUsers = new Set();
+                
+                this.initializeElements();
+                this.attachEventListeners();
+                this.connect();
+            }
+
+            initializeElements() {
+                this.statusDot = document.getElementById('statusDot');
+                this.statusText = document.getElementById('statusText');
+                this.messagesContainer = document.getElementById('messagesContainer');
+                this.usernameInput = document.getElementById('usernameInput');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+            }
+
+            attachEventListeners() {
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.sendMessage();
+                    } else {
+                        this.handleTyping();
+                    }
+                });
+                
+                this.usernameInput.addEventListener('input', (e) => {
+                    this.username = e.target.value.trim();
+                });
+            }
+
+            connect() {
+                const wsUrl = 'ws://localhost:8080';
+                this.ws = new WebSocket(wsUrl);
+
+                this.ws.onopen = () => {
+                    this.isConnected = true;
+                    this.updateConnectionStatus(true);
+                    this.messageInput.disabled = false;
+                    this.sendButton.disabled = false;
+                };
+
+                this.ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    this.handleMessage(data);
+                };
+
+                this.ws.onclose = () => {
+                    this.isConnected = false;
+                    this.updateConnectionStatus(false);
+                    this.messageInput.disabled = true;
+                    this.sendButton.disabled = true;
+                    
+                    // Attempt to reconnect after 3 seconds
+                    setTimeout(() => this.connect(), 3000);
+                };
+
+                this.ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                };
+            }
+
+            updateConnectionStatus(connected) {
+                if (connected) {
+                    this.statusDot.classList.remove('disconnected');
+                    this.statusText.textContent = 'Connected';
+                } else {
+                    this.statusDot.classList.add('disconnected');
+                    this.statusText.textContent = 'Disconnected';
+                }
+            }
+
+            handleMessage(data) {
+                switch (data.type) {
+                    case 'welcome':
+                        if (!this.username) {
+                            this.username = data.username;
+                            this.usernameInput.value = this.username;
+                        }
+                        data.messages.forEach(msg => this.displayMessage(msg));
+                        break;
+                    
+                    case 'message':
+                    case 'user_joined':
+                    case 'user_left':
+                    case 'username_changed':
+                        this.displayMessage(data);
+                        break;
+                    
+                    case 'typing_update':
+                        this.updateTypingIndicator(data.typingUsers);
+                        break;
+                }
+            }
+
+            displayMessage(message) {
+                // Remove welcome message if it exists
+                const welcomeMsg = this.messagesContainer.querySelector('.welcome-message');
+                if (welcomeMsg) {
+                    welcomeMsg.remove();
+                }
+
+                const messageElement = document.createElement('div');
+                
+                if (message.type === 'message') {
+                    const isOwn = message.username === this.username;
+                    messageElement.className = `message ${isOwn ? 'own' : ''}`;
+                    
+                    messageElement.innerHTML = `
+                        <div class="message-bubble">
+                            ${!isOwn ? `<div class="username">${message.username}</div>` : ''}
+                            ${message.text}
+                        </div>
+                        <div class="message-info">
+                            ${this.formatTime(message.timestamp)}
+                        </div>
+                    `;
+                } else {
+                    messageElement.className = 'system-message';
+                    let text = '';
+                    
+                    switch (message.type) {
+                        case 'user_joined':
+                            text = `${message.username} joined the chat`;
+                            break;
+                        case 'user_left':
+                            text = `${message.username} left the chat`;
+                            break;
+                        case 'username_changed':
+                            text = `${message.oldUsername} changed name to ${message.newUsername}`;
+                            break;
+                    }
+                    
+                    messageElement.textContent = text;
+                }
+                
+                this.messagesContainer.appendChild(messageElement);
+                this.scrollToBottom();
+            }
+
+            updateTypingIndicator(typingUsers) {
+                // Remove existing typing indicator
+                const existingIndicator = this.messagesContainer.querySelector('.typing-indicator');
+                if (existingIndicator) {
+                    existingIndicator.remove();
+                }
+
+                // Filter out current user and show indicator if others are typing
+                const otherTypingUsers = typingUsers.filter(user => user !== this.username);
+                
+                if (otherTypingUsers.length > 0) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'typing-indicator';
+                    
+                    let text = '';
+                    if (otherTypingUsers.length === 1) {
+                        text = `${otherTypingUsers[0]} is typing`;
+                    } else if (otherTypingUsers.length === 2) {
+                        text = `${otherTypingUsers[0]} and ${otherTypingUsers[1]} are typing`;
+                    } else {
+                        text = `${otherTypingUsers.length} people are typing`;
+                    }
+                    
+                    indicator.innerHTML = `
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                        <span>${text}...</span>
+                    `;
+                    
+                    this.messagesContainer.appendChild(indicator);
+                    this.scrollToBottom();
+                }
+            }
+
+            sendMessage() {
+                const text = this.messageInput.value.trim();
+                if (!text || !this.isConnected) return;
+
+                // Update username if changed
+                if (this.usernameInput.value.trim() !== this.username) {
+                    this.username = this.usernameInput.value.trim() || this.username;
+                    this.sendUsernameChange();
+                }
+
+                this.ws.send(JSON.stringify({
+                    type: 'message',
+                    text: text,
+                    username: this.username
+                }));
+
+                this.messageInput.value = '';
+                this.stopTyping();
+            }
+
+            handleTyping() {
+                if (!this.isConnected) return;
+
+                this.ws.send(JSON.stringify({
+                    type: 'typing_start',
+                    username: this.username
+                }));
+
+                // Clear existing timeout
+                if (this.typingTimeout) {
+                    clearTimeout(this.typingTimeout);
+                }
+
+                // Stop typing after 3 seconds
+                this.typingTimeout = setTimeout(() => {
+                    this.stopTyping();
+                }, 3000);
+            }
+
+            stopTyping() {
+                if (this.isConnected) {
+                    this.ws.send(JSON.stringify({
+                        type: 'typing_stop',
+                        username: this.username
+                    }));
+                }
+
+                if (this.typingTimeout) {
+                    clearTimeout(this.typingTimeout);
+                    this.typingTimeout = null;
+                }
+            }
+
+            sendUsernameChange() {
+                if (this.isConnected) {
+                    this.ws.send(JSON.stringify({
+                        type: 'username_change',
+                        username: this.username
+                    }));
+                }
+            }
+
+            formatTime(timestamp) {
+                const date = new Date(timestamp);
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            scrollToBottom() {
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            }
+        }
+
+        // Initialize the messenger app
+        document.addEventListener('DOMContentLoaded', () => {
+            new MessengerApp();
+        });
+    </script>
+</body>
+</html>
